@@ -4,6 +4,10 @@ include_once 'includes.php';
 class ImageUtil {
     
     
+    
+    
+    
+    
     public function color_grid_from_jpg($filename)
     {
         
@@ -11,8 +15,6 @@ class ImageUtil {
         $width = 0;
         
         list($height,$width) = getimagesize($filename);
-        
-        
         
         
         $im = imagecreatefromjpeg("$filename");

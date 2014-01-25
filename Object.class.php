@@ -202,10 +202,10 @@ class Object  {
             echo $eol.$this->DataName().":: $key => $value";
         }
         
-        echo $eol."------------------------------------".$eol;
+        echo $eol."<pre>------------------------------------".$eol;
         $tmp = print_r($this,true);
         echo str_replace("\n", $eol, $tmp);
-        echo $eol."------------------------------------".$eol;
+        echo $eol."------------------------------------</pre>".$eol;
         
         
     }
