@@ -132,8 +132,9 @@ class file {
         if (!is_null($replace_space))
             $pathname = str_replace (" ", $replace_space, $pathname);
         
-        if (is_dir($pathname)) return; // if it already exists then don't do it
-        @mkdir($pathname,0777,true);
+        if (is_dir($pathname)) return $pathname; // if it already exists then don't do it
+        
+        mkdir($pathname,0777,true);
         
         if (!is_dir($pathname)) return null;
         
@@ -1313,6 +1314,13 @@ class file {
         
     }
    
+    
+    public static function execute($cmd)
+    {
+        $result = array();
+        exec($cmd,$result);
+        return $result;
+    }
     
     
 }
