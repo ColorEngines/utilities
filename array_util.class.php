@@ -1137,6 +1137,22 @@ class array_util
     }
 
 
+    public static function FromTemplateSimple($src,$rowTemplate = '{#key#}=[{#value#}]')
+    {
+
+        if (is_null($src)) return array();
+        
+        $result = array();
+        foreach ($src as $src_rowID => $src_row)
+        {
+            $result[$src_rowID] = str_replace('{#value#}', $src_row, str_replace('{#key#}', $src_rowID, $rowTemplate));
+        }
+
+
+        return $result;
+    }
+    
+    
     public static function RemoveElements($from,$exclude_list) {
         
     }

@@ -369,6 +369,12 @@ class file {
     {
         return self::folder_with_extension($path, 'gz' ,$sep, $basenameAsKey );
     }
+
+    public static function folder_php($path, $sep = "/", $basenameAsKey = false )
+    {
+        return self::folder_with_extension($path, 'php' ,$sep, $basenameAsKey );
+    }
+    
     
 
     /*
@@ -772,7 +778,7 @@ class file {
 
     public static function wget($url,$output_filename)
     {
-        $cmd =  "wget -O  \"$output_filename\" \"$url\"";
+        $cmd =  "wget -O  -q \"$output_filename\" \"$url\"";
 
         exec($cmd);
         if (file_exists($output_filename)) return $output_filename;
@@ -1013,9 +1019,9 @@ class file {
     
     public static function grepped_text_file($filename,$grep)
     {
-        $cmd = "cat {$filename} | grep {$grep}";
+        $cmd = "grep {$grep} '{$filename}'";
         $result_lines = array();
-        $locate_result = exec($cmd ,$result_lines);
+        exec($cmd ,$result_lines);
         return $result_lines;
     }
 
@@ -1317,6 +1323,8 @@ class file {
     
     public static function execute($cmd)
     {
+        // echo "<br>".$cmd."<br>";
+        
         $result = array();
         exec($cmd,$result);
         return $result;

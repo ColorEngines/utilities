@@ -1,6 +1,16 @@
 <?php
 class htmlutil {
 
+    
+    public static function ProtocolServer()
+    {
+        if (array_key_exists('HTTPS', $_SERVER))
+            if (trim($_SERVER['HTTPS']) != '') return "https://".$_SERVER['SERVER_NAME'];    
+        
+        return "http://".$_SERVER['SERVER_NAME'];
+    }
+    
+    
     public static function AsJavaScriptSimpleVariable($src,$variableName)
     {
         if (is_null($src)) return "";
@@ -929,7 +939,6 @@ STRING;
         if (is_null($time)) return "";
         if (is_null($url)) return "";
         if ($time < 0 ) return "";
-
 
         $result = '<meta http-equiv="refresh" content="'.$time.'; url='.$url.' " />';
 
