@@ -94,6 +94,26 @@ class util {
     }
     
     
+    public static function  CommandLineValues($argv)
+    {
+        
+        $result = array();
+        foreach ($argv as $index => $rawCommandLineValue) 
+        {
+            if (self::startsWith($rawCommandLineValue, '--'))
+            {
+                $name = util::midStr($rawCommandLineValue, '--', "=", true, false);
+                $val = util::rightStr($rawCommandLineValue, '=',false);
+                $result[$name] = $val;
+            }
+            
+        }
+        
+        
+        return $result;
+        
+    }
+    
     
     /**
     * @method isWebBrowser

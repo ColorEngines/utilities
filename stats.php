@@ -1,7 +1,7 @@
 <?php
-
 class stats
 {
+    
     // Function to calculate square of value - mean
     public static function sd_square($x, $mean) { return pow($x - $mean,2); }
 
@@ -266,7 +266,6 @@ class stats
         $result = $f;
         return $result;
     }
-
 
 }
 ?>

@@ -778,7 +778,7 @@ class file {
 
     public static function wget($url,$output_filename)
     {
-        $cmd =  "wget -O  -q \"$output_filename\" \"$url\"";
+        $cmd =  "wget -q -O \"$output_filename\" \"$url\"";
 
         exec($cmd);
         if (file_exists($output_filename)) return $output_filename;
@@ -1323,7 +1323,7 @@ class file {
     
     public static function execute($cmd)
     {
-        // echo "<br>".$cmd."<br>";
+        //echo "<br>".$cmd."<br>";
         
         $result = array();
         exec($cmd,$result);
