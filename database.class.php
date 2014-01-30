@@ -643,8 +643,11 @@ class database
        if (is_null($db) || $db == "") return null;
         if (is_null($table) || $table == "") return null;
 
-        $update_rows = $this->update("drop table if exists `$db`.`$table`;");
+        $sql = "drop table if exists `$db`.`$table`;";
+        $update_rows = $this->update($sql);
 
+        echo "Drop table [$sql]  $update_rows\n";
+        
         return $update_rows;
     }
 
@@ -682,10 +685,14 @@ class database
         if ($table_name == "") return null;
         if (count($column_name_array) == 0) return null;
 
+        //echo "pre tableName = $table_name\n";
+        
         $tableName = $this->cleanColumnName($table_name);
 
-        if ($drop_table_first) $this->DropTable($db, $table_name);
+        //echo "post tableName = $tableName\n";
 
+        
+        if ($drop_table_first) $this->DropTable($db, $tableName);
         
         $result  = "\nCREATE TABLE  `$db`.`$tableName`  (";
         $result .= "\n `ID` int(11) NOT NULL auto_increment,";
