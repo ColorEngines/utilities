@@ -89,6 +89,8 @@ class util {
         if (trim($result) == "true") return true;
         if (trim($result) == "false") return false;
         
+        if ($result == '') $result = null;
+        
         return $result;
 
     }

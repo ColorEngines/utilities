@@ -675,7 +675,7 @@ class database
 
     
     
-    public function CreateTableFromArray($db,$table_name,$column_name_array,$drop_table_first = false, $full_index = false,$indexes = NULL)
+    public function CreateTableFromArray($db,$table_name,$column_name_array,$drop_table_first = false, $full_index = false,$indexes = NULL,$trim_end_of_column_names = true)
     {
 
         if (is_null($db)) return null;
@@ -700,7 +700,7 @@ class database
         $colNames = array();
         foreach ($column_name_array as $column_name => $column_type)  //** expect $column_name_array to be   ['column_name'] = db_type
         {
-            $cleanName = $this->cleanColumnName($column_name,"C");
+            $cleanName = $this->cleanColumnName($column_name,"C",$trim_end_of_column_names);
             if ($cleanName == "") continue;
             $colNames[$column_name] = $cleanName;
 
@@ -1125,7 +1125,7 @@ class database
     }
 
     
-    public function cleanColumnName($rawColumnName,$numeric_prefix = 'F')
+    public function cleanColumnName($rawColumnName,$numeric_prefix = 'F',$trimend = true)
     {
           
 
@@ -1179,7 +1179,8 @@ class database
 
             }
 
-            $rawColumnName = trim(util::trim_end($rawColumnName, "_"));
+            if ($trimend)
+                $rawColumnName = trim(util::trim_end($rawColumnName, "_"));
             
             return $rawColumnName;
     }
@@ -1582,10 +1583,11 @@ class database
 
     $useable = array();
         foreach ($array as $key => $value)
-            $useable[$key] = (is_null($value) || trim($value) == "") ? 'NULL' : $value;
+            $useable[$key] = (is_null($value) || trim($value) == "") ? 'NULL' : ((is_numeric($value)) ? $value : "'{$value}'");
 
-        $sql   = "insert into `$db`.`$table` (".join(',',array_keys($useable)).") values (".join(',',array_values($useable)).");";
+        $sql   = "insert into `$db`.`$table` (`".join("`,`",array_keys($useable))."`) values (".join(',',array_values($useable)).");";
 
+       echo "$sql\n";
 
         return $this->insert($sql);
 
