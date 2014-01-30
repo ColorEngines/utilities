@@ -17,10 +17,13 @@ if (is_null($db))
 }
 
 $drop = util::CommandLineOptionValue($argv,'drop',true);
+$table = util::CommandLineOptionValue($argv,'table',null);
+$text = util::CommandLineOptionValue($argv,'text',null);
 
-dbf2db($dbf,$db,$drop);
 
-function dbf2db($dbf,$db,$drop = true)
+dbf2db($dbf,$db,$table,$drop,$text);
+
+function dbf2db($dbf,$db,$table = null,$drop = true,$text = null)
 {
     
     list($db,$host,$user,$pass) = explode(":",$db);
@@ -32,7 +35,8 @@ function dbf2db($dbf,$db,$drop = true)
     $fieldNames['Record'] = 'int(10)';
     //print_r($fieldNames);
 
-    $table = ucwords(str_replace(".dbf", "", strtolower(basename($dbf))));
+    if (is_null($table))
+        $table = ucwords(str_replace(".dbf", "", strtolower(basename($dbf))));
     
     $table = $mysql->CreateTableFromArray($db, $table, $fieldNames,$drop,true,null,false);
     
@@ -65,6 +69,8 @@ function dbf2db($dbf,$db,$drop = true)
             $rawRecord .= fgets($fh);
         
         if (!util::contains($rawRecord, "Record:")) continue; // not a proper record
+        
+        if (!is_null($text) && !util::contains($rawRecord, $text)) continue; // we ask that it must contain tisa text and it did not
         
         // $array = ;
         // field names and values will be used in database insert array;
