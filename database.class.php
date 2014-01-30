@@ -683,7 +683,6 @@ class database
         $tableName = $this->cleanColumnName($table_name);
 
         //echo "post tableName = $tableName\n";
-
         
         if ($drop_table_first) $this->DropTable($db, $tableName);
         

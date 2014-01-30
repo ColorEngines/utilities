@@ -16,10 +16,11 @@ if (is_null($db))
     exit();
 }
 
+$drop = util::CommandLineOptionValue($argv,'drop',true);
 
-dbf2db($dbf,$db);
+dbf2db($dbf,$db,$drop);
 
-function dbf2db($dbf,$db)
+function dbf2db($dbf,$db,$drop = true)
 {
     
     list($db,$host,$user,$pass) = explode(":",$db);
@@ -33,7 +34,7 @@ function dbf2db($dbf,$db)
 
     $table = ucwords(str_replace(".dbf", "", strtolower(basename($dbf))));
     
-    $table = $mysql->CreateTableFromArray($db, $table, $fieldNames,true,true,null,false);
+    $table = $mysql->CreateTableFromArray($db, $table, $fieldNames,$drop,true,null,false);
     
     //echo "CReated = [$table]\n";
     
@@ -52,7 +53,11 @@ function dbf2db($dbf,$db)
     $fh = fopen($extracted_filename, "r");
     
     $lineCount = 0;
-    $failedCount = 0;
+    $inserted_result = array();
+    $inserted_result['exists'] = 0;
+    $inserted_result['failed'] = 0;
+    $inserted_result['insert'] = 0;
+    
     while (!feof($fh))
     {
         $rawRecord = "";
@@ -64,15 +69,36 @@ function dbf2db($dbf,$db)
         // $array = ;
         // field names and values will be used in database insert array;
         
-        $insert_result = $mysql->InsertArray($db, $table, DoubleExplode(str_replace('"', "", str_replace("'", "", $rawRecord)),"\n", ":"));
+        $array = DoubleExplode(str_replace('"', "", str_replace("'", "", $rawRecord)),"\n", ":");
         
-        if ($insert_result == -1)
+        $existing_count = 0;
+        if ($drop == false)
+            $existing_count = $mysql->count($table, null, "Record = {$array['Record']}"); // we did not drop the table so we want to heck that we don't have tis row already
+        
+        if($existing_count <= 0)
+            $insert_array_result = $mysql->InsertArray($db, $table, $array);
+        
+        
+        if ($existing_count > 0)
         {
-            echo "\nFAILED: {$rawRecord}.\n";
-            $failedCount++;
+            echo "E";
+            $inserted_result['exists'] += 1;
         }
-        else
-            echo ".";
+        else 
+        {
+            if ($insert_array_result <= 0)
+            {
+                echo "\nFAILED: {$rawRecord}.\n";
+                $inserted_result['failed'] += 1;
+            }
+            else
+            {
+                echo "I";
+                $inserted_result['insert'] += 1;
+            }
+            
+        }
+        
         
          //print_r($array);
         
@@ -81,8 +107,9 @@ function dbf2db($dbf,$db)
     }
     fclose($fh);
     
-    echo "\nROW COUNT [$table]: {$mysql->count($table)}\n";
-    if ($failedCount > 0) echo "FAILED COUNT:{$failedCount}\n";
+    echo "\nrow_count[$table]: {$mysql->count($table)}\n";    
+    foreach ($inserted_result as $key => $value) 
+        echo "$key:$value\n";
     
     echo "\n";
 
