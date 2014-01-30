@@ -29,14 +29,13 @@ function dbf2db($dbf,$db)
     // get headers only
     $fieldNames = getFieldNamesAndTypes($dbf);
     $fieldNames['Record'] = 'int(10)';
-    print_r($fieldNames);
+    //print_r($fieldNames);
 
     $table = ucwords(str_replace(".dbf", "", strtolower(basename($dbf))));
     
-    
     $table = $mysql->CreateTableFromArray($db, $table, $fieldNames,true,true,null,false);
     
-    echo "CReated = [$table]\n";
+    //echo "CReated = [$table]\n";
     
     // export to temp file and process that line by line
     $extracted_filename = "{$dbf}.extracted";
@@ -53,6 +52,7 @@ function dbf2db($dbf,$db)
     $fh = fopen($extracted_filename, "r");
     
     $lineCount = 0;
+    $failedCount = 0;
     while (!feof($fh))
     {
         $rawRecord = "";
@@ -61,15 +61,18 @@ function dbf2db($dbf,$db)
         
         if (!util::contains($rawRecord, "Record:")) continue; // not a proper record
         
-        $rawRecord = str_replace("'", "", $rawRecord);
-        $rawRecord = str_replace('"', "", $rawRecord);
-        
-        $array = DoubleExplode($rawRecord,"\n", ":");
+        // $array = ;
         // field names and values will be used in database insert array;
         
-        $insert_result = $mysql->InsertArray($db, $table, $array);
+        $insert_result = $mysql->InsertArray($db, $table, DoubleExplode(str_replace('"', "", str_replace("'", "", $rawRecord)),"\n", ":"));
         
-        echo "Insert [{$array['Record']}] .. $insert_result\n";
+        if ($insert_result == -1)
+        {
+            echo "\nFAILED: {$rawRecord}.\n";
+            $failedCount++;
+        }
+        else
+            echo ".";
         
          //print_r($array);
         
@@ -78,6 +81,10 @@ function dbf2db($dbf,$db)
     }
     fclose($fh);
     
+    echo "\nROW COUNT [$table]: {$mysql->count($table)}\n";
+    if ($failedCount > 0) echo "FAILED COUNT:{$failedCount}\n";
+    
+    echo "\n";
 
     unset($mysql);
     

@@ -639,16 +639,9 @@ class database
 
     public function DropTable($db,$table)
     {
-
-       if (is_null($db) || $db == "") return null;
+        if (is_null($db) || $db == "") return null;
         if (is_null($table) || $table == "") return null;
-
-        $sql = "drop table if exists `$db`.`$table`;";
-        $update_rows = $this->update($sql);
-
-        echo "Drop table [$sql]  $update_rows\n";
-        
-        return $update_rows;
+        return $this->update("drop table if exists `$db`.`$table`;");
     }
 
     public function CreateTable($db,$table,$sql,$drop_table_first = false, $full_index = false)
@@ -743,7 +736,7 @@ class database
         $result .= "\n ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci;";
 
         
-        ErrorMessage::Marker( __METHOD__." result = $result");
+        //ErrorMessage::Marker( __METHOD__." result = $result");
         
         
         $this->update($result);
@@ -1579,17 +1572,12 @@ class database
 
     public function InsertArray($db,$table,$array)
     {
-            
 
-    $useable = array();
-        foreach ($array as $key => $value)
-            $useable[$key] = (is_null($value) || trim($value) == "") ? 'NULL' : ((is_numeric($value)) ? $value : "'{$value}'");
+        $useable = array();
+            foreach ($array as $key => $value)
+                $useable[$key] = (is_null($value) || trim($value) == "") ? 'NULL' : ((is_numeric($value)) ? $value : "'{$value}'");
 
-        $sql   = "insert into `$db`.`$table` (`".join("`,`",array_keys($useable))."`) values (".join(',',array_values($useable)).");";
-
-       echo "$sql\n";
-
-        return $this->insert($sql);
+        return $this->insert("insert into `$db`.`$table` (`".join("`,`",array_keys($useable))."`) values (".join(',',array_values($useable)).");");
 
     }
 
